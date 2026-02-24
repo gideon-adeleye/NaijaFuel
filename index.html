@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Naija Fuel — Nigerian Calorie Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet"/>
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<header>
+  <div>
+    <div class="logo">Naija<span>Fuel</span></div>
+    <div class="tagline">Nigerian Calorie Tracker — OMAD Edition</div>
+  </div>
+  <div class="date-display">
+    <strong id="todayDate"></strong>
+    <span id="todayDay"></span>
+  </div>
+</header>
+
+<main>
+  <!-- LEFT COLUMN -->
+  <div class="left-col">
+
+    <!-- ADD FOOD -->
+    <div class="card">
+      <div class="section-head">
+        <div class="card-label">Log Food</div>
+        <div class="toggle-row">
+          <button class="toggle-btn active" onclick="setMode('search')">Quick</button>
+          <button class="toggle-btn" onclick="setMode('manual')">Manual</button>
+        </div>
+      </div>
+
+      <div class="add-form">
+        <!-- SEARCH MODE -->
+        <div id="searchMode">
+          <div class="search-row">
+            <input type="text" id="foodSearch" placeholder="Search Nigerian food (e.g. jollof rice)…" oninput="filterFoods()" />
+          </div>
+          <div id="searchResults"></div>
+          <div class="input-row" style="margin-top:0.5rem;">
+            <input type="number" id="searchGrams" placeholder="Grams / serving" min="1" value="100"/>
+            <button class="btn btn-sm" onclick="addFromSearch()">+ Add</button>
+          </div>
+        </div>
+
+        <!-- MANUAL MODE -->
+        <div id="manualMode" style="display:none;">
+          <input type="text" id="manualName" placeholder="Food name" style="margin-bottom:0.5rem;"/>
+          <div class="manual-fields">
+            <input type="number" id="manualCal"     placeholder="kcal"      min="0"/>
+            <input type="number" id="manualProtein" placeholder="protein g"  min="0"/>
+            <input type="number" id="manualCarbs"   placeholder="carbs g"    min="0"/>
+            <input type="number" id="manualFat"     placeholder="fat g"      min="0"/>
+            <input type="number" id="manualFiber"   placeholder="fiber g"    min="0"/>
+            <input type="number" id="manualGrams"   placeholder="grams"      min="1" value="100"/>
+          </div>
+          <button class="btn btn-primary" style="margin-top:0.75rem;" onclick="addManual()">Add to Log</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TODAY'S LOG -->
+    <div class="card">
+      <div class="section-head">
+        <div class="card-label">Today's Log</div>
+        <button class="btn btn-sm" onclick="clearLog()">Clear All</button>
+      </div>
+      <div class="log-list" id="logList">
+        <div class="log-empty">No food logged yet. Start tracking your meal.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="right-col">
+
+    <!-- RING CARD -->
+    <div class="card ring-wrap">
+      <div class="card-label" style="text-align:center;">Daily Goal</div>
+
+      <div class="ring-svg-wrap">
+        <svg width="180" height="180" viewBox="0 0 180 180">
+          <circle cx="90" cy="90" r="76" fill="none" stroke="#2a2a2a" stroke-width="12"/>
+          <circle id="ringFill" cx="90" cy="90" r="76" fill="none" stroke="url(#ringGrad)" stroke-width="12"
+            stroke-linecap="round" stroke-dasharray="477.5" stroke-dashoffset="477.5"/>
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#c45c1a"/>
+              <stop offset="100%" stop-color="#e8a020"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="ring-center">
+          <div class="ring-cal" id="ringCal">0</div>
+          <div class="ring-label">kcal eaten</div>
+        </div>
+      </div>
+
+      <div class="ring-remaining" id="ringRemaining">
+        <strong id="remainCal">1500</strong> kcal remaining
+      </div>
+
+      <div class="macro-row">
+        <div class="macro-pill"><div class="val" id="totalProtein">0g</div><div class="lbl">Protein</div></div>
+        <div class="macro-pill"><div class="val" id="totalCarbs">0g</div><div class="lbl">Carbs</div></div>
+        <div class="macro-pill"><div class="val" id="totalFat">0g</div><div class="lbl">Fat</div></div>
+      </div>
+
+      <div class="goal-bar-wrap">
+        <div class="goal-bar-label">
+          <span>0</span>
+          <span id="goalBarLabel">1500 kcal</span>
+        </div>
+        <div class="goal-bar-track">
+          <div class="goal-bar-fill" id="goalBar" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div style="width:100%">
+        <div class="card-label" style="margin-bottom:0.5rem;">Calorie Goal</div>
+        <div class="goal-setting">
+          <input type="number" id="goalInput" value="1500" min="500" max="5000"/>
+          <button class="btn btn-sm" onclick="setGoal()">Set</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK ADD -->
+    <div class="card">
+      <div class="card-label">Common Nigerian Foods</div>
+      <div class="chips" id="chipList"></div>
+    </div>
+
+    <!-- STREAK -->
+    <div class="card">
+      <div class="card-label">7-Day Streak</div>
+      <div class="streak-row" id="streakRow"></div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="card">
+      <div class="card-label">Recent Days</div>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">No history yet</div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
